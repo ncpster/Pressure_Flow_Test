@@ -8,7 +8,7 @@
 #   - Clear plot to start fresh comparison
 
 import tkinter as tk
-from tkinter import messagebox, filedialog
+from tkinter import messagebox, filedialog, simpledialog
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from openpyxl import load_workbook
@@ -53,7 +53,7 @@ class DataPlottingApp:
                                           bg='orange', fg='white', width=15, height=1)
         self.clear_plot_button.grid(row=0, column=1, padx=5)
         
-        self.remove_last_button = tk.Button(button_subframe, text="Remove Last File", command=self.remove_last_file, 
+        self.remove_last_button = tk.Button(button_subframe, text="Remove Plot", command=self.remove_last_file, 
                                            bg='red', fg='white', width=15, height=1)
         self.remove_last_button.grid(row=0, column=2, padx=5)
         
@@ -259,17 +259,67 @@ class DataPlottingApp:
         messagebox.showinfo("Success", "Plot cleared. Ready to load new files.")
     
     def remove_last_file(self):
-        """Remove the last loaded file from the plot"""
+        """Show a dialog to select which file to remove"""
         if not self.loaded_files:
             messagebox.showinfo("Info", "No files loaded.")
             return
         
-        # Remove the last file
-        last_key = list(self.loaded_files.keys())[-1]
-        del self.loaded_files[last_key]
+        # Create a selection dialog
+        file_list = list(self.loaded_files.keys())
         
-        self.update_plot()
-        self.update_info_display()
+        # Create a simple Toplevel window for selection
+        selection_window = tk.Toplevel(self.root)
+        selection_window.title("Select File to Remove")
+        selection_window.geometry("500x300")
+        selection_window.transient(self.root)
+        selection_window.grab_set()
+        
+        # Label
+        tk.Label(selection_window, text="Select a file to remove:", font=('Arial', 12)).pack(padx=10, pady=10)
+        
+        # Listbox with scrollbar
+        frame = tk.Frame(selection_window)
+        frame.pack(padx=10, pady=10, fill='both', expand=True)
+        
+        scrollbar = tk.Scrollbar(frame)
+        scrollbar.pack(side='right', fill='y')
+        
+        listbox = tk.Listbox(frame, yscrollcommand=scrollbar.set, font=('Courier', 11))
+        listbox.pack(side='left', fill='both', expand=True)
+        scrollbar.config(command=listbox.yview)
+        
+        # Add files to listbox with their colors
+        for filename in file_list:
+            listbox.insert(tk.END, filename)
+            color = self.loaded_files[filename]['color']
+            listbox.itemconfig(tk.END, fg=color)
+        
+        # Select first item by default
+        if listbox.size() > 0:
+            listbox.selection_set(0)
+            listbox.see(0)
+        
+        # Buttons
+        button_frame = tk.Frame(selection_window)
+        button_frame.pack(padx=10, pady=10)
+        
+        def remove_selected():
+            selection = listbox.curselection()
+            if not selection:
+                messagebox.showwarning("Warning", "Please select a file to remove.")
+                return
+            
+            selected_file = file_list[selection[0]]
+            del self.loaded_files[selected_file]
+            self.update_plot()
+            self.update_info_display()
+            selection_window.destroy()
+        
+        def cancel():
+            selection_window.destroy()
+        
+        tk.Button(button_frame, text="Remove", command=remove_selected, bg='red', fg='white', width=12, padx=10).pack(side='left', padx=5)
+        tk.Button(button_frame, text="Cancel", command=cancel, bg='gray', fg='white', width=12, padx=10).pack(side='left', padx=5)
 
 
 # Create and run the application
