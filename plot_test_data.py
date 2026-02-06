@@ -80,6 +80,11 @@ class DataPlottingApp:
         self.canvas = FigureCanvasTkAgg(self.fig, master=plot_frame)
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(fill='both', expand=True)
+
+        self.cursor_label = tk.Label(plot_frame, text="Time: -- s | Pressure: -- PSI", font=('Arial', 12))
+        self.cursor_label.pack(anchor='w', padx=5, pady=(5, 0))
+
+        self.canvas.mpl_connect('motion_notify_event', self.on_mouse_move)
         
         # Configure grid weights
         self.root.grid_rowconfigure(2, weight=1)
@@ -210,6 +215,14 @@ class DataPlottingApp:
             self.ax.set_ylim(min_p - padding, max_p + padding)
         
         self.canvas.draw()
+
+    def on_mouse_move(self, event):
+        """Update cursor readout with time and pressure under the mouse"""
+        if event.inaxes != self.ax or event.xdata is None or event.ydata is None:
+            self.cursor_label.config(text="Time: -- s | Pressure: -- PSI")
+            return
+
+        self.cursor_label.config(text=f"Time: {event.xdata:.2f} s | Pressure: {event.ydata:.2f} PSI")
     
     def update_info_display(self):
         """Update the info text display with loaded files and flow data"""
