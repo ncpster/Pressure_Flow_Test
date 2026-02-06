@@ -39,7 +39,7 @@ class DataPlottingApp:
         control_frame.grid(row=0, column=0, columnspan=2, sticky='ew', padx=5, pady=5)
         control_frame.grid_propagate(False)
         
-        tk.Label(control_frame, text="Test Data Plotter", font=('Arial', 14, 'bold'), bg='lightgray').pack(anchor='w', padx=10, pady=5)
+        tk.Label(control_frame, text="Test Data Plotter", font=('Arial', 16, 'bold'), bg='lightgray').pack(anchor='w', padx=10, pady=5)
         
         # Buttons
         button_subframe = tk.Frame(control_frame, bg='lightgray')
@@ -72,8 +72,8 @@ class DataPlottingApp:
         plot_frame.grid(row=2, column=0, columnspan=2, sticky='nsew', padx=10, pady=10)
         
         self.fig, self.ax = plt.subplots(figsize=(10, 5))
-        self.ax.set_xlabel('Time (s)', fontsize=10)
-        self.ax.set_ylabel('Pressure (PSI)', fontsize=10)
+        self.ax.set_xlabel('Time (s)', fontsize=12)
+        self.ax.set_ylabel('Pressure (PSI)', fontsize=12)
         self.ax.set_title('Alicat A Pressure Decay - Multiple Test Comparison')
         self.ax.grid(True, alpha=0.3)
         
@@ -193,11 +193,11 @@ class DataPlottingApp:
                 self.ax.plot(data['time'], data['pressure'], marker='o', linewidth=2, 
                            label=filename, color=data['color'], markersize=3, alpha=0.7)
         
-        self.ax.set_xlabel('Time (s)', fontsize=10)
-        self.ax.set_ylabel('Pressure (PSI)', fontsize=10)
+        self.ax.set_xlabel('Time (s)', fontsize=12)
+        self.ax.set_ylabel('Pressure (PSI)', fontsize=12)
         self.ax.set_title('Alicat A Pressure Decay - Multiple Test Comparison')
         self.ax.grid(True, alpha=0.3)
-        self.ax.legend(loc='best', fontsize=8)
+        self.ax.legend(loc='best', fontsize=10)
         
         # Set reasonable y-axis limits
         all_pressures = []
@@ -219,22 +219,29 @@ class DataPlottingApp:
         # Configure color tags for each file
         for filename, data in self.loaded_files.items():
             color = data['color']
-            self.info_text.tag_config(f"color_{filename}", foreground=color, font=('Arial', 10, 'bold'))
+            self.info_text.tag_config(f"color_{filename}", foreground=color, font=('Courier', 12, 'bold'))
         
         if not self.loaded_files:
             self.info_text.insert(tk.END, "No files loaded. Click 'Load Excel File' to get started.")
         else:
-            header = f"{'File Name':<50} {'Avg Flow A (SLPM)':<20} {'Avg Flow B (SLPM)':<20}\n"
-            header += "-" * 90 + "\n"
+            # Calculate column widths based on actual data
+            max_filename_len = max(len("File Name"), max(len(f) for f in self.loaded_files.keys()))
+            col1_width = max_filename_len + 2
+            col2_width = 20
+            col3_width = 20
+            
+            # Create header
+            header = f"{'File Name':<{col1_width}} {'Avg Flow A (SLPM)':<{col2_width}} {'Avg Flow B (SLPM)':<{col3_width}}\n"
+            header += "-" * (col1_width + col2_width + col3_width) + "\n"
             self.info_text.insert(tk.END, header)
             
             for filename, data in self.loaded_files.items():
                 # Insert filename with color tag
-                filename_str = f"{filename:<50}"
+                filename_str = f"{filename:<{col1_width}}"
                 self.info_text.insert(tk.END, filename_str, f"color_{filename}")
                 
                 # Insert flow data in normal text
-                flow_str = f" {data['avg_flow_a']:<20.3f} {data['avg_flow_b']:<20.3f}\n"
+                flow_str = f"{data['avg_flow_a']:<{col2_width}.3f} {data['avg_flow_b']:<{col3_width}.3f}\n"
                 self.info_text.insert(tk.END, flow_str)
         
         self.info_text.config(state='disabled')
