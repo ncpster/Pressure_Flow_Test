@@ -180,8 +180,8 @@ class DataPlottingApp:
         self.ax.clear()
         
         if not self.loaded_files:
-            self.ax.set_xlabel('Time (s)', fontsize=10)
-            self.ax.set_ylabel('Pressure (PSI)', fontsize=10)
+            self.ax.set_xlabel('Time (s)', fontsize=12)
+            self.ax.set_ylabel('Pressure (PSI)', fontsize=12)
             self.ax.set_title('Alicat A Pressure Decay - Multiple Test Comparison')
             self.ax.grid(True, alpha=0.3)
             self.canvas.draw()
