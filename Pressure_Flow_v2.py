@@ -264,13 +264,13 @@ class DualAlicatTestApp:
         self.settings_sheet.append(["Setting", "Value"])
         self.settings_sheet.append(["Part Number", part_number])
         self.settings_sheet.append(["Timestamp", timestamp])
-        self.settings_sheet.append(["A Flow Test Pressure (PSI)", self.a_flow_test_pressure])
-        self.settings_sheet.append(["B Flow Test Pressure (PSI)", self.b_flow_test_pressure])
-        self.settings_sheet.append(["B Decay Test Pressure (PSI)", self.b_decay_test_pressure])
-        self.settings_sheet.append(["Flow Sample Time (s)", self.flow_sample_time])
-        self.settings_sheet.append(["Pressure Sample Time (s)", self.pressure_sample_time])
-        self.settings_sheet.append(["Read Rate (s)", self.read_rate])
-        self.settings_sheet.append(["Pressurize Time (s)", self.pressurize_time])
+        self.settings_sheet.append(["A Flow Test Pressure (PSI)", round(self.a_flow_test_pressure, 2)])
+        self.settings_sheet.append(["B Flow Test Pressure (PSI)", round(self.b_flow_test_pressure, 2)])
+        self.settings_sheet.append(["B Decay Test Pressure (PSI)", round(self.b_decay_test_pressure, 2)])
+        self.settings_sheet.append(["Flow Sample Time (s)", round(self.flow_sample_time, 2)])
+        self.settings_sheet.append(["Pressure Sample Time (s)", round(self.pressure_sample_time, 2)])
+        self.settings_sheet.append(["Read Rate (s)", round(self.read_rate, 2)])
+        self.settings_sheet.append(["Pressurize Time (s)", round(self.pressurize_time, 2)])
         
         # Write data headers
         self.data_sheet.append(["Phase", "Time (s)", "A Pressure (PSI)", "B Pressure (PSI)", 
@@ -355,10 +355,10 @@ class DualAlicatTestApp:
                 self.flow_a_display.set(f"{data_a['mass_flow']:.3f}")
                 self.flow_b_display.set(f"{data_b['mass_flow']:.3f}")
                 
-                # Store data
-                self.data_sheet.append(["Flow Test", f"{elapsed:.2f}", 
-                                       f"{data_a['pressure']:.2f}", f"{data_b['pressure']:.2f}",
-                                       f"{data_a['mass_flow']:.3f}", f"{data_b['mass_flow']:.3f}"])
+                # Store data (as numbers, not strings)
+                self.data_sheet.append(["Flow Test", round(elapsed, 2), 
+                                       round(data_a['pressure'], 2), round(data_b['pressure'], 2),
+                                       round(data_a['mass_flow'], 3), round(data_b['mass_flow'], 3)])
                 self.workbook.save(self.excel_path)
             
             self.root.update_idletasks()
@@ -427,12 +427,12 @@ class DualAlicatTestApp:
                 self.time_data.append(elapsed)
                 self.pressure_a_data.append(data_a['pressure'])
                 
-                # Store data in Excel
-                self.data_sheet.append(["Pressure Decay", f"{elapsed:.2f}", 
-                                       f"{data_a['pressure']:.2f}", 
-                                       f"{data_b['pressure']:.2f}" if data_b else "N/A",
-                                       f"{data_a['mass_flow']:.3f}",
-                                       f"{data_b['mass_flow']:.3f}" if data_b else "N/A"])
+                # Store data in Excel (as numbers, not strings)
+                self.data_sheet.append(["Pressure Decay", round(elapsed, 2), 
+                                       round(data_a['pressure'], 2), 
+                                       round(data_b['pressure'], 2) if data_b else "N/A",
+                                       round(data_a['mass_flow'], 3),
+                                       round(data_b['mass_flow'], 3) if data_b else "N/A"])
                 self.workbook.save(self.excel_path)
                 
                 # Update plot
