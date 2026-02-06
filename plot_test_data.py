@@ -202,7 +202,6 @@ class DataPlottingApp:
         self.ax.set_ylabel('Pressure (PSI)', fontsize=12)
         self.ax.set_title('Alicat A Pressure Decay - Multiple Test Comparison')
         self.ax.grid(True, alpha=0.3)
-        self.ax.legend(loc='best', fontsize=10)
         
         # Set reasonable y-axis limits
         all_pressures = []
